@@ -1,0 +1,48 @@
+name:                paprika-server
+version:             0.0.0.1
+github:              "kirisaki/paprika-server"
+license:             MIT
+author:              "Akihito KIRISAKI"
+maintainer:          "kirisaki@klaraworks.net"
+copyright:           "2018 Akihito Kirisaki"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on Github at <https://github.com/githubuser/paprika-server#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+executables:
+  paprika-server-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - paprika-server
+
+tests:
+  paprika-server-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - paprika-server
