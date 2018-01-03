@@ -21,12 +21,22 @@ description:         Please see the README on Github at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- aeson
+- containers
+- servant
+- servant-server
+- servant-elm
+- text
+- transformers
+- wai
+- wai-logger
+- warp
 
 library:
   source-dirs: src
 
 executables:
-  paprika-server-exe:
+  paprika-server:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
