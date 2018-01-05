@@ -23,11 +23,15 @@ dependencies:
 - base >= 4.7 && < 5
 - aeson
 - containers
+- esqueleto
 - servant
 - servant-server
 - servant-elm
 - text
 - transformers
+- persistent
+- persistent-template
+- persistent-sqlite
 - wai
 - wai-logger
 - warp

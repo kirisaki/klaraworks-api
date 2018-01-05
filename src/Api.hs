@@ -1,18 +1,27 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE EmptyDataDecls #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Api where
 
-import Data.Proxy
+import           Data.Proxy
 import qualified Data.Text as T
-import GHC.Generics
+import           GHC.Generics
 
-import Data.Aeson
-import Servant.API
-import Servant.Elm      (ElmType)
+import           Data.Aeson
+import           Database.Persist
+import           Database.Persist.TH
+import           Servant.API
+import           Servant.Elm(ElmType)
 
 type PaprikaApi =
   "_api" :>
@@ -33,3 +42,8 @@ instance ElmType Article
 instance ToJSON Article
 instance FromJSON Article
 
+share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+    Articledb
+        name String
+        content T.Text
+|]

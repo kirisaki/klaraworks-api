@@ -10,6 +10,7 @@ import Data.List
 import qualified Data.Text as T
 
 import Network.Wai
+import Database.Persist
 import Servant
 
 import Api
