@@ -1,6 +1,6 @@
-name:                paprika-server
+name:                klaraworks-api
 version:             0.0.0.1
-github:              "kirisaki/paprika-server"
+github:              "kirisaki/klaraworks-api"
 license:             MIT
 author:              "Akihito KIRISAKI"
 maintainer:          "kirisaki@klaraworks.net"
@@ -23,11 +23,13 @@ dependencies:
 - base >= 4.7 && < 5
 - aeson
 - containers
+- elm-export
 - esqueleto
 - servant
 - servant-server
 - servant-elm
 - text
+- time
 - transformers
 - persistent
 - persistent-template
@@ -40,7 +42,7 @@ library:
   source-dirs: src
 
 executables:
-  paprika-server:
+  klaraworks:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -48,10 +50,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - paprika-server
+    - klaraworks-api
 
 tests:
-  paprika-server-test:
+  klaraworks-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -59,4 +61,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - paprika-server
+    - klaraworks-api

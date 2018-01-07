@@ -15,6 +15,7 @@ module Api where
 
 import           Data.Proxy
 import qualified Data.Text as T
+import           Data.Time
 import           GHC.Generics
 
 import           Data.Aeson
@@ -23,27 +24,40 @@ import           Database.Persist.TH
 import           Servant.API
 import           Servant.Elm(ElmType)
 
-type PaprikaApi =
-  "_api" :>
-  ("article" :> Get '[JSON] [Article] :<|>
-   "article" :> Capture "articleName" T.Text :> Get '[JSON] Article)
+share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+    Works
+        dir T.Text
+        title T.Text
+        date Day
+        event T.Text
+        worksType T.Text
+        origin T.Text
+        fanart Bool
+        contents [T.Text]
+        status T.Text
+|]
 
-paprikaApi :: Proxy PaprikaApi
-paprikaApi = Proxy
-
-data Article
-  = Article {
-    articleName :: T.Text,
-    articleContent :: T.Text
+data ApiWorks = ApiWorks 
+  { apiWorksDir :: T.Text
+  , apiWorksTitle :: T.Text
+  , apiWorksDate :: Day
+  , apiWorksEvent :: T.Text
+  , apiWorksType :: T.Text
+  , apiWorksOrigin :: T.Text
+  , apiWorksFanart :: Bool
+  , apiWorksContents :: [T.Text]
+  , apiWorksStatus :: T.Text
   }
   deriving (Eq, Show, Generic)
 
-instance ElmType Article
-instance ToJSON Article
-instance FromJSON Article
+instance ToJSON ApiWorks
+instance FromJSON ApiWorks
+instance ElmType ApiWorks
 
-share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-    Articledb
-        name String
-        content T.Text
-|]
+type KlaraWorksApi =
+  "_api" :>
+  ("works" :> Get '[JSON] [ApiWorks] :<|>
+   "works" :> Capture "apiWorksDir" T.Text :> Get '[JSON] ApiWorks)
+
+klaraWorksApi :: Proxy KlaraWorksApi
+klaraWorksApi = Proxy

@@ -5,37 +5,37 @@
 
 module App where
 
-import Control.Monad.Trans.Except
-import Data.List
+import           Control.Monad.Trans.Except
+import           Data.List
+import           Data.Time.Calendar(fromGregorian)
 import qualified Data.Text as T
 
-import Network.Wai
-import Database.Persist
-import Servant
+import           Network.Wai
+import           Database.Persist
+import           Servant
 
-import Api
+import           Api
 
-paprikaApp :: IO Application
-paprikaApp = return $ serve paprikaApi server
+klaraWorksApp :: IO Application
+klaraWorksApp = return $ serve klaraWorksApi server
 
-server :: Server PaprikaApi
+server :: Server KlaraWorksApi
 server =
-  getArticleList :<|>
-  getArticle
+  getWorksList :<|>
+  getWorks
 
-getArticleList :: Handler [Article]
-getArticleList = return exampleArticles
+getWorksList :: Handler [ApiWorks]
+getWorksList = return exampleWorks
 
-getArticle :: T.Text -> Handler Article
-getArticle str =
+getWorks :: T.Text -> Handler ApiWorks
+getWorks str =
   let
-    i = findIndex (\a -> articleName a == str) exampleArticles
+    i = findIndex (\a ->  apiWorksDir a == str) exampleWorks
   in
     case i of
-      Just n -> return $ exampleArticles !! n
+      Just n -> return $ exampleWorks !! n
       Nothing -> throwError err404
 
-exampleArticles :: [Article]
-exampleArticles = [ Article "foo" "example Article"
-                  , Article "bar" "nyaaaan"
+exampleWorks :: [ApiWorks]
+exampleWorks = [ ApiWorks "20160813-theseus" "テセウスの私に彼女を愛せるか" (fromGregorian 2016 08 13) "コミックマーケット90" "image-multi" "艦隊これくしょん" True ["11.jpg","14.jpg","17.jpg","38.jpg"] "在庫なし"
                   ]

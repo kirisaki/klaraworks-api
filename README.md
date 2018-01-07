@@ -1,4 +1,4 @@
-# paprika-server
+# klaraworks-api
 
-RESTful wiki system server.
+WebAPI to serve contents metadata of klaraworks.net
 

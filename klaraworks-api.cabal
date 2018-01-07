@@ -1,0 +1,112 @@
+-- This file has been generated from package.yaml by hpack version 0.20.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 34bc3fb3ef95996ba854c9e474a0ce8564d479e10bfbd502d736788e8ae9e266
+
+name:           klaraworks-api
+version:        0.0.0.1
+synopsis:       Short description of your package
+description:    Please see the README on Github at <https://github.com/githubuser/paprika-server#readme>
+homepage:       https://github.com/kirisaki/klaraworks-api#readme
+bug-reports:    https://github.com/kirisaki/klaraworks-api/issues
+author:         Akihito KIRISAKI
+maintainer:     kirisaki@klaraworks.net
+copyright:      2018 Akihito Kirisaki
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/kirisaki/klaraworks-api
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , containers
+    , elm-export
+    , esqueleto
+    , persistent
+    , persistent-sqlite
+    , persistent-template
+    , servant
+    , servant-elm
+    , servant-server
+    , text
+    , time
+    , transformers
+    , wai
+    , wai-logger
+    , warp
+  exposed-modules:
+      Api
+      App
+  other-modules:
+      Paths_klaraworks_api
+  default-language: Haskell2010
+
+executable klaraworks
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , containers
+    , elm-export
+    , esqueleto
+    , klaraworks-api
+    , persistent
+    , persistent-sqlite
+    , persistent-template
+    , servant
+    , servant-elm
+    , servant-server
+    , text
+    , time
+    , transformers
+    , wai
+    , wai-logger
+    , warp
+  other-modules:
+      Paths_klaraworks_api
+  default-language: Haskell2010
+
+test-suite klaraworks-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , containers
+    , elm-export
+    , esqueleto
+    , klaraworks-api
+    , persistent
+    , persistent-sqlite
+    , persistent-template
+    , servant
+    , servant-elm
+    , servant-server
+    , text
+    , time
+    , transformers
+    , wai
+    , wai-logger
+    , warp
+  other-modules:
+      Paths_klaraworks_api
+  default-language: Haskell2010

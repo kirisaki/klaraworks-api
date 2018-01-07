@@ -20,5 +20,5 @@ main = do
         let port = 8080
         let settings = setPort port $ setLogger aplogger defaultSettings
         runSqlite ":memory:" $ do runMigration migrateAll
-        runSettings settings =<< paprikaApp
+        runSettings settings =<< klaraWorksApp
         
