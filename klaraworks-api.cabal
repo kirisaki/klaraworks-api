@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 34bc3fb3ef95996ba854c9e474a0ce8564d479e10bfbd502d736788e8ae9e266
+-- hash: d5a96aee2cde99623ecc259f81d674003b7427033e4721b93ef1726625695ccc
 
 name:           klaraworks-api
 version:        0.0.0.1
@@ -35,9 +35,12 @@ library
     , containers
     , elm-export
     , esqueleto
+    , monad-logger
+    , mtl
     , persistent
     , persistent-sqlite
     , persistent-template
+    , resourcet
     , servant
     , servant-elm
     , servant-server
@@ -50,6 +53,7 @@ library
   exposed-modules:
       Api
       App
+      Utils
   other-modules:
       Paths_klaraworks_api
   default-language: Haskell2010
@@ -66,9 +70,12 @@ executable klaraworks
     , elm-export
     , esqueleto
     , klaraworks-api
+    , monad-logger
+    , mtl
     , persistent
     , persistent-sqlite
     , persistent-template
+    , resourcet
     , servant
     , servant-elm
     , servant-server
@@ -95,9 +102,12 @@ test-suite klaraworks-test
     , elm-export
     , esqueleto
     , klaraworks-api
+    , monad-logger
+    , mtl
     , persistent
     , persistent-sqlite
     , persistent-template
+    , resourcet
     , servant
     , servant-elm
     , servant-server

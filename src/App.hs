@@ -5,9 +5,10 @@
 
 module App where
 
+import           Control.Monad.IO.Class (liftIO)
 import           Control.Monad.Trans.Except
 import           Data.List
-import           Data.Time.Calendar(fromGregorian)
+import           Data.Time.Calendar (fromGregorian)
 import qualified Data.Text as T
 
 import           Network.Wai
@@ -15,6 +16,7 @@ import           Database.Persist
 import           Servant
 
 import           Api
+import           Utils
 
 klaraWorksApp :: IO Application
 klaraWorksApp = return $ serve klaraWorksApi server
@@ -25,17 +27,18 @@ server =
   getWorks
 
 getWorksList :: Handler [ApiWorks]
-getWorksList = return exampleWorks
+getWorksList = do
+  liftIO $ runSql $ do
+    worksList <- selectList [] []
+    return $ map toApiWorksFE worksList
 
 getWorks :: T.Text -> Handler ApiWorks
-getWorks str =
-  let
-    i = findIndex (\a ->  apiWorksDir a == str) exampleWorks
-  in
-    case i of
-      Just n -> return $ exampleWorks !! n
-      Nothing -> throwError err404
+getWorks str = do
+  works <- liftIO $ runSql $ do
+    works <- selectFirst [WorksDir ==. str] []
+    return works
+  case works of
+    Just w -> return $ toApiWorksFE w
+    Nothing -> throwError err404
 
-exampleWorks :: [ApiWorks]
-exampleWorks = [ ApiWorks "20160813-theseus" "テセウスの私に彼女を愛せるか" (fromGregorian 2016 08 13) "コミックマーケット90" "image-multi" "艦隊これくしょん" True ["11.jpg","14.jpg","17.jpg","38.jpg"] "在庫なし"
                   ]

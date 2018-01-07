@@ -38,17 +38,33 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 |]
 
 data ApiWorks = ApiWorks 
-  { apiWorksDir :: T.Text
-  , apiWorksTitle :: T.Text
-  , apiWorksDate :: Day
-  , apiWorksEvent :: T.Text
-  , apiWorksType :: T.Text
-  , apiWorksOrigin :: T.Text
-  , apiWorksFanart :: Bool
-  , apiWorksContents :: [T.Text]
-  , apiWorksStatus :: T.Text
+  { dir :: T.Text
+  , title :: T.Text
+  , date :: Day
+  , event :: T.Text
+  , worksType :: T.Text
+  , origin :: T.Text
+  , fanart :: Bool
+  , contents :: [T.Text]
+  , status :: T.Text
   }
   deriving (Eq, Show, Generic)
+
+toApiWorks :: Works -> ApiWorks
+toApiWorks w = ApiWorks
+  { dir = worksDir w
+  , title = worksTitle w
+  , date = worksDate w
+  , event = worksEvent w
+  , worksType = worksWorksType w
+  , origin = worksOrigin w
+  , fanart = worksFanart w
+  , contents = worksContents w
+  , status = worksStatus w
+  }
+
+toApiWorksFE :: Entity Works -> ApiWorks
+toApiWorksFE (Entity wid w) = toApiWorks w  
 
 instance ToJSON ApiWorks
 instance FromJSON ApiWorks
