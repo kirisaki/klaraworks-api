@@ -45,59 +45,45 @@ data ApiWorks = ApiWorks
   { dir :: T.Text
   , title :: T.Text
   , date :: Day
-  , event :: T.Text
+  , event :: Maybe T.Text
   , worksType :: T.Text
-  , origin :: T.Text
+  , origin :: Maybe T.Text
   , fanart :: Bool
   , contents :: [T.Text]
-  , status :: T.Text
+  , status :: Maybe T.Text
   }
   deriving (Eq, Show, Generic)
-
-data ApiWorksReq = ApiWorksReq 
-  { reqDir :: T.Text
-  , reqTitle :: T.Text
-  , reqDate :: Day
-  , reqEvent :: Maybe T.Text
-  , reqWorksType :: T.Text
-  , reqOrigin :: Maybe T.Text
-  , reqFanart :: Bool
-  , reqContents :: [T.Text]
-  , reqStatus :: Maybe T.Text
-  }
-  deriving (Eq, Show, Generic)
-deriveFromJSON defaultOptions ''ApiWorksReq
     
 modelToApiWorks :: Works -> ApiWorks
 modelToApiWorks w = ApiWorks
   { dir = worksDir w
   , title = worksTitle w
   , date = worksDate w
-  , event = worksEvent w
+  , event = Just $ worksEvent w
   , worksType = worksWorksType w
-  , origin = worksOrigin w
+  , origin = Just $ worksOrigin w
   , fanart = worksFanart w
   , contents = worksContents w
-  , status = worksStatus w
+  , status = Just $ worksStatus w
   }
 
-reqToModel :: ApiWorksReq -> Works
-reqToModel req = let
+apiWorksToModel :: ApiWorks -> Works
+apiWorksToModel w = let
   emptyString s =
     case s of
       Just str -> str
       Nothing -> ""
   in
     Works
-    { worksDir = reqDir req
-    , worksTitle = reqTitle req
-    , worksDate = reqDate req
-    , worksEvent = emptyString $ reqEvent req
-    , worksWorksType = reqWorksType req
-    , worksOrigin = emptyString $ reqOrigin req
-    , worksFanart =  reqFanart req
-    , worksContents = reqContents req
-    , worksStatus = emptyString $ reqStatus req
+    { worksDir = dir w
+    , worksTitle = title w
+    , worksDate = date w
+    , worksEvent = emptyString $ event w
+    , worksWorksType = worksType w
+    , worksOrigin = emptyString $ origin w
+    , worksFanart =  fanart w
+    , worksContents = contents w
+    , worksStatus = emptyString $ status w
     }
     
 entityToApiWorks :: Entity Works -> ApiWorks
@@ -112,7 +98,7 @@ type KlaraWorksApi =
   ( "works" :>
     ( Get '[JSON] [ApiWorks] :<|>
       Capture "apiWorksDir" T.Text :> Get '[JSON] ApiWorks :<|>
-      ReqBody '[JSON] ApiWorksReq :> Post '[JSON] () ))
+      ReqBody '[JSON] ApiWorks :> Post '[JSON] () ))
 
 klaraWorksApi :: Proxy KlaraWorksApi
 klaraWorksApi = Proxy

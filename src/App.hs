@@ -42,11 +42,11 @@ getWorks str = do
     Just w -> return $ entityToApiWorks w
     Nothing -> throwError err404
 
-postWorks :: ApiWorksReq -> Handler ()
+postWorks :: ApiWorks -> Handler ()
 postWorks w = do
-  let record = reqToModel w
-  let dir = reqDir w 
-  exists <- liftIO $ runSql $ selectFirst [WorksDir ==. dir] []
+  let record = apiWorksToModel w
+  let inDir = dir w 
+  exists <- liftIO $ runSql $ selectFirst [WorksDir ==. inDir] []
   if exists == Nothing then do
     liftIO $ runSql $ Database.Persist.insert record
     return ()
