@@ -7,6 +7,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
@@ -19,6 +20,7 @@ import           Data.Time
 import           GHC.Generics
 
 import           Data.Aeson
+import           Data.Aeson.TH
 import           Database.Persist
 import           Database.Persist.TH
 import           Servant.API
@@ -35,6 +37,8 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
         fanart Bool
         contents [T.Text]
         status T.Text
+        UniqueHandler dir
+        deriving Show Eq
 |]
 
 data ApiWorks = ApiWorks 
@@ -50,8 +54,22 @@ data ApiWorks = ApiWorks
   }
   deriving (Eq, Show, Generic)
 
-toApiWorks :: Works -> ApiWorks
-toApiWorks w = ApiWorks
+data ApiWorksReq = ApiWorksReq 
+  { reqDir :: T.Text
+  , reqTitle :: T.Text
+  , reqDate :: Day
+  , reqEvent :: Maybe T.Text
+  , reqWorksType :: T.Text
+  , reqOrigin :: Maybe T.Text
+  , reqFanart :: Bool
+  , reqContents :: [T.Text]
+  , reqStatus :: Maybe T.Text
+  }
+  deriving (Eq, Show, Generic)
+deriveFromJSON defaultOptions ''ApiWorksReq
+    
+modelToApiWorks :: Works -> ApiWorks
+modelToApiWorks w = ApiWorks
   { dir = worksDir w
   , title = worksTitle w
   , date = worksDate w
@@ -63,8 +81,27 @@ toApiWorks w = ApiWorks
   , status = worksStatus w
   }
 
-toApiWorksFE :: Entity Works -> ApiWorks
-toApiWorksFE (Entity wid w) = toApiWorks w  
+reqToModel :: ApiWorksReq -> Works
+reqToModel req = let
+  emptyString s =
+    case s of
+      Just str -> str
+      Nothing -> ""
+  in
+    Works
+    { worksDir = reqDir req
+    , worksTitle = reqTitle req
+    , worksDate = reqDate req
+    , worksEvent = emptyString $ reqEvent req
+    , worksWorksType = reqWorksType req
+    , worksOrigin = emptyString $ reqOrigin req
+    , worksFanart =  reqFanart req
+    , worksContents = reqContents req
+    , worksStatus = emptyString $ reqStatus req
+    }
+    
+entityToApiWorks :: Entity Works -> ApiWorks
+entityToApiWorks (Entity wid w) = modelToApiWorks w  
 
 instance ToJSON ApiWorks
 instance FromJSON ApiWorks
@@ -72,8 +109,10 @@ instance ElmType ApiWorks
 
 type KlaraWorksApi =
   "_api" :>
-  ("works" :> Get '[JSON] [ApiWorks] :<|>
-   "works" :> Capture "apiWorksDir" T.Text :> Get '[JSON] ApiWorks)
+  ( "works" :>
+    ( Get '[JSON] [ApiWorks] :<|>
+      Capture "apiWorksDir" T.Text :> Get '[JSON] ApiWorks :<|>
+      ReqBody '[JSON] ApiWorksReq :> Post '[JSON] () ))
 
 klaraWorksApi :: Proxy KlaraWorksApi
 klaraWorksApi = Proxy
