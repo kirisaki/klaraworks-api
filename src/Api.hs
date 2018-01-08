@@ -97,8 +97,10 @@ type KlaraWorksApi =
   "_api" :>
   ( "works" :>
     ( Get '[JSON] [ApiWorks] :<|>
-      Capture "apiWorksDir" T.Text :> Get '[JSON] ApiWorks :<|>
-      ReqBody '[JSON] ApiWorks :> Post '[JSON] () ))
+      Capture "worksDir" T.Text :> Get '[JSON] ApiWorks :<|>
+      ReqBody '[JSON] ApiWorks :> Post '[JSON] () :<|>
+      Capture "worksDir" T.Text :> ReqBody '[JSON] ApiWorks :> Put '[JSON] () :<|>
+      Capture "worksDir" T.Text :> Delete '[JSON] () ))
 
 klaraWorksApi :: Proxy KlaraWorksApi
 klaraWorksApi = Proxy

@@ -23,6 +23,5 @@ main = do
         let settings = setPort port $ setLogger aplogger defaultSettings
         runSql $ do
           runMigration migrateAll
-          insert $ Works "20160813-theseus" "テセウスの私に彼女を愛せるか" (fromGregorian 2016 08 13) "コミックマーケット90" "image-multi" "艦隊これくしょん" True ["11.jpg","14.jpg","17.jpg","38.jpg"] "在庫なし"
         runSettings settings =<< klaraWorksApp
         

@@ -25,7 +25,9 @@ server :: Server KlaraWorksApi
 server =
   getWorksList :<|>
   getWorks :<|>
-  postWorks
+  postWorks :<|>
+  putWorks :<|>
+  deleteWorks 
 
 getWorksList :: Handler [ApiWorks]
 getWorksList = do
@@ -40,7 +42,7 @@ getWorks str = do
     return works
   case works of
     Just w -> return $ entityToApiWorks w
-    Nothing -> throwError err404
+    Nothing -> throwError err404 { errBody = "Entry not found" }
 
 postWorks :: ApiWorks -> Handler ()
 postWorks w = do
@@ -52,3 +54,16 @@ postWorks w = do
     return ()
     else
     throwError err409 { errBody = "Entry already exists." }
+
+putWorks :: T.Text -> ApiWorks -> Handler ()
+putWorks inDir w = do
+  let record = apiWorksToModel w
+  exists <- liftIO $ runSql $ selectFirst [WorksDir ==. inDir] []
+  case exists of
+    Just (Entity wid _) -> do
+      liftIO $ runSql $ replace wid record
+      return ()
+    Nothing -> throwError err404 { errBody = "Entry not found." }
+
+deleteWorks :: T.Text -> Handler ()
+deleteWorks inDir = liftIO $ runSql $ deleteWhere [WorksDir ==. inDir]
