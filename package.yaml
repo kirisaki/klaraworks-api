@@ -1,5 +1,5 @@
 name:                klaraworks-api
-version:             0.0.0.1
+version:             0.0.0.2
 github:              "kirisaki/klaraworks-api"
 license:             MIT
 author:              "Akihito KIRISAKI"
@@ -22,11 +22,13 @@ description:         Please see the README on Github at <https://github.com/gith
 dependencies:
 - base >= 4.7 && < 5
 - aeson
+- bytestring
 - containers
+- cookie
 - elm-export
 - esqueleto
-- monad-logger
 - mtl
+- monad-logger
 - servant
 - servant-server
 - servant-elm
@@ -34,10 +36,12 @@ dependencies:
 - persistent-template
 - persistent-sqlite
 - resourcet
+- random
 - text
 - time
 - transformers
 - wai
+- wai-app-static
 - wai-logger
 - warp
 

@@ -1,39 +1,81 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances  #-}
 
 module App where
 
 import           Control.Monad.IO.Class (liftIO)
 import           Control.Monad.Trans.Except
+import           Data.ByteString (ByteString)
 import           Data.List
+import           Data.Map
+import           Data.Monoid
 import           Data.Time.Calendar (fromGregorian)
 import qualified Data.Text as T
 
 import           Network.Wai
 import           Database.Persist
 import           Servant
+import           Servant.Server.Experimental.Auth
+import           Servant.API.Experimental.Auth
+import           Web.Cookie
 
 import           Api
 import           Utils
 
+
+newtype Account = Account { unAccount :: T.Text }
+
+database :: Map ByteString Account
+database = fromList [ ("key1", Account "Anne Briggs")
+                    , ("key2", Account "Bruce Cockburn")
+                    , ("key3", Account "Ghdalia Tazarts")
+                    ]
+
+lookupAccount :: ByteString -> Handler Account
+lookupAccount key = case Data.Map.lookup key database of
+  Nothing -> throwError (err403 { errBody = "Invalid Cookie" })
+  Just usr -> return usr
+
+authHandler :: AuthHandler Request Account
+authHandler = mkAuthHandler handler
+  where
+  maybeToEither e = maybe (Left e) Right
+  throw401 msg = throwError $ err401 { errBody = msg }
+  handler req = either throw401 lookupAccount $ do
+    cookie <- maybeToEither "Missing cookie header" $ Data.List.lookup "cookie" $ requestHeaders req
+    maybeToEither "Missing token in cookie" $ Data.List.lookup "servant-auth-cookie" $ parseCookies cookie
+    
+type instance AuthServerData (AuthProtect "cookie-auth") = Account
+
+genAuthServerContext :: Context (AuthHandler Request Account ': '[])
+genAuthServerContext = authHandler :. EmptyContext
+
+
 klaraWorksApp :: IO Application
-klaraWorksApp = return $ serve klaraWorksApi server
+klaraWorksApp = return $ serveWithContext klaraWorksApi genAuthServerContext server
 
 server :: Server KlaraWorksApi
-server =
-  getWorksList :<|>
-  getWorks :<|>
-  postWorks :<|>
-  putWorks :<|>
-  deleteWorks 
+server = getWorksList :<|>
+         getWorks :<|>
+         postWorks :<|>
+         putWorks :<|>
+         deleteWorks 
 
-getWorksList :: Handler [ApiWorks]
+getWorksList ::  Handler [ApiWorks]
 getWorksList = do
   liftIO $ runSql $ do
     worksList <- selectList [] []
-    return $ map entityToApiWorks worksList
+    return $ Data.List.map entityToApiWorks worksList
 
 getWorks :: T.Text -> Handler ApiWorks
 getWorks str = do
@@ -44,8 +86,8 @@ getWorks str = do
     Just w -> return $ entityToApiWorks w
     Nothing -> throwError err404 { errBody = "Entry not found" }
 
-postWorks :: ApiWorks -> Handler ()
-postWorks w = do
+postWorks :: Account -> ApiWorks -> Handler ()
+postWorks acc w = do
   let record = apiWorksToModel w
   let inDir = dir w 
   exists <- liftIO $ runSql $ selectFirst [WorksDir ==. inDir] []
@@ -55,8 +97,8 @@ postWorks w = do
     else
     throwError err409 { errBody = "Entry already exists." }
 
-putWorks :: T.Text -> ApiWorks -> Handler ()
-putWorks inDir w = do
+putWorks :: Account -> T.Text -> ApiWorks -> Handler ()
+putWorks acc inDir w = do
   let record = apiWorksToModel w
   exists <- liftIO $ runSql $ selectFirst [WorksDir ==. inDir] []
   case exists of
@@ -65,5 +107,5 @@ putWorks inDir w = do
       return ()
     Nothing -> throwError err404 { errBody = "Entry not found." }
 
-deleteWorks :: T.Text -> Handler ()
-deleteWorks inDir = liftIO $ runSql $ deleteWhere [WorksDir ==. inDir]
+deleteWorks :: Account -> T.Text -> Handler ()
+deleteWorks acc inDir = liftIO $ runSql $ deleteWhere [WorksDir ==. inDir]

@@ -2,10 +2,10 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d5a96aee2cde99623ecc259f81d674003b7427033e4721b93ef1726625695ccc
+-- hash: 174a6519c9d14df31785e93ce2a17b92080cd4de7900518a85f5896995d74695
 
 name:           klaraworks-api
-version:        0.0.0.1
+version:        0.0.0.2
 synopsis:       Short description of your package
 description:    Please see the README on Github at <https://github.com/githubuser/paprika-server#readme>
 homepage:       https://github.com/kirisaki/klaraworks-api#readme
@@ -32,7 +32,9 @@ library
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
     , containers
+    , cookie
     , elm-export
     , esqueleto
     , monad-logger
@@ -40,6 +42,7 @@ library
     , persistent
     , persistent-sqlite
     , persistent-template
+    , random
     , resourcet
     , servant
     , servant-elm
@@ -48,6 +51,7 @@ library
     , time
     , transformers
     , wai
+    , wai-app-static
     , wai-logger
     , warp
   exposed-modules:
@@ -66,7 +70,9 @@ executable klaraworks
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
     , containers
+    , cookie
     , elm-export
     , esqueleto
     , klaraworks-api
@@ -75,6 +81,7 @@ executable klaraworks
     , persistent
     , persistent-sqlite
     , persistent-template
+    , random
     , resourcet
     , servant
     , servant-elm
@@ -83,6 +90,7 @@ executable klaraworks
     , time
     , transformers
     , wai
+    , wai-app-static
     , wai-logger
     , warp
   other-modules:
@@ -98,7 +106,9 @@ test-suite klaraworks-test
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
     , containers
+    , cookie
     , elm-export
     , esqueleto
     , klaraworks-api
@@ -107,6 +117,7 @@ test-suite klaraworks-test
     , persistent
     , persistent-sqlite
     , persistent-template
+    , random
     , resourcet
     , servant
     , servant-elm
@@ -115,6 +126,7 @@ test-suite klaraworks-test
     , time
     , transformers
     , wai
+    , wai-app-static
     , wai-logger
     , warp
   other-modules:

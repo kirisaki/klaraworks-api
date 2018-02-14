@@ -5,6 +5,7 @@
 module Main where
 
 import qualified Data.Text as T
+import qualified Data.Time as Time
 import           Data.Time.Calendar(fromGregorian)
 
 import           Network.Wai.Handler.Warp
@@ -18,10 +19,11 @@ import           Utils
 
 main :: IO ()
 main = do
-    withStdoutLogger $ \aplogger -> do
+  withStdoutLogger $ \aplogger -> do
         let port = 8080
         let settings = setPort port $ setLogger aplogger defaultSettings
         runSql $ do
           runMigration migrateAll
         runSettings settings =<< klaraWorksApp
+
         

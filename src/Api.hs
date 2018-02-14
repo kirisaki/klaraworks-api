@@ -24,7 +24,9 @@ import           Data.Aeson.TH
 import           Database.Persist
 import           Database.Persist.TH
 import           Servant.API
+import           Servant.API.Experimental.Auth
 import           Servant.Elm(ElmType)
+
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
     Works
@@ -98,9 +100,9 @@ type KlaraWorksApi =
   ( "works" :>
     ( Get '[JSON] [ApiWorks] :<|>
       Capture "worksDir" T.Text :> Get '[JSON] ApiWorks :<|>
-      ReqBody '[JSON] ApiWorks :> Post '[JSON] () :<|>
-      Capture "worksDir" T.Text :> ReqBody '[JSON] ApiWorks :> Put '[JSON] () :<|>
-      Capture "worksDir" T.Text :> Delete '[JSON] () ))
+      AuthProtect "cookie-auth" :> ReqBody '[JSON] ApiWorks :> Post '[JSON] () :<|>
+      AuthProtect "cookie-auth" :> Capture "worksDir" T.Text :> ReqBody '[JSON] ApiWorks :> Put '[JSON] () :<|>
+      AuthProtect "cookie-auth" :> Capture "worksDir" T.Text :> Delete '[JSON] () ))
 
 klaraWorksApi :: Proxy KlaraWorksApi
 klaraWorksApi = Proxy
