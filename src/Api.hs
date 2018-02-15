@@ -35,29 +35,20 @@ import           Types
 
 type KlaraWorksApi =
   "_api" :>
-  ( "works" :> Capture "language" T.Text :>
-    ( Get '[JSON] [ApiWorksHeader] :<|>
-      Capture "worksDir" T.Text :> Get '[JSON] ApiWorks
-    )
-  ) :<|>
-  AuthProtect "cookie-auth" :>
   (
-    "info" :>
-    (
-      Get '[JSON] [ApiInfo] :<|>
-      Capture "infoDir" T.Text :> Get '[JSON] ApiInfo :<|>
-      ReqBody '[JSON] ApiInfo :> Post '[JSON] () :<|>
-      Capture "infoDir" T.Text :> ReqBody '[JSON] ApiInfo :> Put '[JSON] () :<|>
-      Capture "infoDir" T.Text :> Delete '[JSON] ()
-    ) :<|>
-    "detail" :>
-    (
-      Get '[JSON] [ApiDetail] :<|>
-      Capture "detailDir" T.Text :> Get '[JSON] ApiDetail :<|>
-      ReqBody '[JSON] ApiDetail :> Post '[JSON] () :<|>
-      Capture "detailDir" T.Text :> ReqBody '[JSON] ApiDetail :> Put '[JSON] () :<|>
-      Capture "detailDir" T.Text :> Delete '[JSON] ()
-    )
+    "works" :> Capture "language" T.Text :> Get '[JSON] [ApiWorksHeader]  :<|>
+    "works" :> Capture "language" T.Text :> Capture "worksDir" T.Text :> Get '[JSON] ApiWorks :<|>
+    "info" :>  AuthProtect "cookie-auth" :> Get '[JSON] [ApiInfo]  :<|>
+    "info" :>  AuthProtect "cookie-auth" :>  Capture "infoDir" T.Text :> Get '[JSON] ApiInfo :<|>
+    "info" :>  AuthProtect "cookie-auth" :>  ReqBody '[JSON] ApiInfo :> Post '[JSON] () :<|>
+    "info" :>  AuthProtect "cookie-auth" :>  Capture "infoDir" T.Text :> ReqBody '[JSON] ApiInfo :> Put '[JSON] () :<|>
+    "info" :>  AuthProtect "cookie-auth" :>  Capture "infoDir" T.Text :> Delete '[JSON] () :<|>
+    "detail" :> AuthProtect "cookie-auth" :> Get '[JSON] [ApiDetail] :<|>
+    "detail" :> AuthProtect "cookie-auth" :> Capture "detailDir" T.Text :> Get '[JSON] ApiDetail :<|>
+    "detail" :> AuthProtect "cookie-auth" :> ReqBody '[JSON] ApiDetail :> Post '[JSON] () :<|>
+    "detail" :> AuthProtect "cookie-auth" :> Capture "detailDir" T.Text :> ReqBody '[JSON] ApiDetail :> Put '[JSON] () :<|>
+    "detail" :> AuthProtect "cookie-auth" :> Capture "detailDir" T.Text :> Delete '[JSON] ()
+    
   )
 
 klaraWorksApi :: Proxy KlaraWorksApi

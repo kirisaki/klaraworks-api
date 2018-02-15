@@ -54,42 +54,45 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 |]
 
 mkField "dir date worksType fanart lang title event origin contents status text"
+
+type Dir = T.Text
   
 type ApiInfo = Record
-  [ "dir" :> T.Text
-  , "date" :> Day
-  , "worksType" :> T.Text
-  , "fanart" :> Bool
+  [ "dir" >: Dir
+  , "date" >: Day
+  , "worksType" >: T.Text
+  , "fanart" >: Bool
   ]
 
 type ApiDetail = Record
-  [ "dir" :> T.Text
-  , "lang" :> T.Text
-  , "title" :> T.Text
-  , "event" :> T.Text
-  , "origin" :> T.Text
-  , "contents" :> [T.Text]
-  , "status" :> T.Text
-  , "text" :> T.Text
+  [ "dir" >: Dir
+  , "lang" >: T.Text
+  , "title" >: T.Text
+  , "event" >: T.Text
+  , "origin" >: T.Text
+  , "contents" >: [T.Text]
+  , "status" >: T.Text
+  , "text" >: T.Text
   ]
 
 type ApiWorksHeader = Record
-  [ "dir" :> T.Text
-  , "title" :> T.Text
-  , "date" :> Day
+  [ "dir" >: Dir
+  , "title" >: T.Text
+  , "date" >: Day
   ]
+
   
 type ApiWorks = Record
-  [ "dir" :> T.Text
-  , "title" :> T.Text
-  , "date" :> Day
-  , "event" :> Maybe T.Text
-  , "worksType" :> T.Text
-  , "origin" :> Maybe T.Text
-  , "fanart" :> Bool
-  , "contents" :> [T.Text]
-  , "status" :> Maybe T.Text
-  , "text" :> Maybe T.Text
+  [ "dir" >: Dir
+  , "title" >: T.Text
+  , "date" >: Day
+  , "event" >: Maybe T.Text
+  , "worksType" >: T.Text
+  , "origin" >: Maybe T.Text
+  , "fanart" >: Bool
+  , "contents" >: [T.Text]
+  , "status" >: Maybe T.Text
+  , "text" >: Maybe T.Text
   ]
 
 

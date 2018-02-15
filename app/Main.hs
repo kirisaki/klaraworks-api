@@ -15,6 +15,7 @@ import           Servant
 import           App
 import           Api
 import           Utils
+import           Types
 
 main :: IO ()
 main = do

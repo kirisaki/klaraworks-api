@@ -22,7 +22,9 @@ import           Data.Monoid
 import           Data.Time.Calendar (fromGregorian)
 import qualified Data.Text as T
 
+import           Control.Lens hiding ((:>))
 import           Network.Wai
+import           Data.Extensible
 import           Database.Persist
 import           Servant
 import           Servant.Server.Experimental.Auth
@@ -31,6 +33,7 @@ import           Web.Cookie
 
 import           Api
 import           Utils
+import           Types
 
 
 newtype Account = Account { unAccount :: T.Text }
@@ -57,7 +60,7 @@ authHandler = mkAuthHandler handler
     
 type instance AuthServerData (AuthProtect "cookie-auth") = Account
 
-genAuthServerContext :: Context (AuthHandler Request Account ': '[])
+genAuthServerContext :: Servant.Context (AuthHandler Request Account ': '[])
 genAuthServerContext = authHandler :. EmptyContext
 
 
@@ -67,45 +70,56 @@ klaraWorksApp = return $ serveWithContext klaraWorksApi genAuthServerContext ser
 server :: Server KlaraWorksApi
 server = getWorksList :<|>
          getWorks :<|>
-         postWorks :<|>
-         putWorks :<|>
-         deleteWorks 
+         getInfoList :<|>
+         getInfo :<|>
+         postInfo :<|>
+         putInfo :<|>
+         deleteInfo :<|> 
+         getDetailList :<|>
+         getDetail :<|>
+         postDetail :<|>
+         putDetail :<|>
+         deleteDetail 
 
-getWorksList ::  Handler [ApiWorks]
-getWorksList = do
-  liftIO $ runSql $ do
-    worksList <- selectList [] []
-    return $ Data.List.map entityToApiWorks worksList
+getWorksList :: T.Text -> Handler [ApiWorksHeader]
+getWorksList language = return [test]
+  where
+    test :: ApiWorksHeader
+    test = dir @= "aaaaaa"
+      <: title @= "aaa"
+      <: date @= (fromGregorian 2018 02 04)
+      <: nil
+      
+getWorks :: T.Text -> Dir -> Handler ApiWorks
+getWorks language inDir = undefined
 
-getWorks :: T.Text -> Handler ApiWorks
-getWorks inDir = do
-  works <- liftIO $ runSql $ do
-    works <- selectFirst [WorksDir ==. inDir] []
-    return works
-  case works of
-    Just w -> return $ entityToApiWorks w
-    Nothing -> throwError err404 { errBody = "Entry not found" }
+getInfoList :: Account -> Handler [ApiInfo]
+getInfoList acc = undefined
 
-postWorks :: Account -> ApiWorks -> Handler ()
-postWorks acc w = do
-  let record = apiWorksToModel w
-  let inDir = dir w 
-  exists <- liftIO $ runSql $ selectFirst [WorksDir ==. inDir] []
-  if exists == Nothing then do
-    liftIO $ runSql $ Database.Persist.insert record
-    return ()
-    else
-    throwError err409 { errBody = "Entry already exists." }
+getInfo :: Account -> Dir -> Handler ApiInfo
+getInfo acc infoDir = undefined
 
-putWorks :: Account -> T.Text -> ApiWorks -> Handler ()
-putWorks acc inDir w = do
-  let record = apiWorksToModel w
-  exists <- liftIO $ runSql $ selectFirst [WorksDir ==. inDir] []
-  case exists of
-    Just (Entity wid _) -> do
-      liftIO $ runSql $ replace wid record
-      return ()
-    Nothing -> throwError err404 { errBody = "Entry not found." }
+postInfo :: Account -> ApiInfo -> Handler()
+postInfo acc info = undefined
 
-deleteWorks :: Account -> T.Text -> Handler ()
-deleteWorks acc inDir = liftIO $ runSql $ deleteWhere [WorksDir ==. inDir]
+putInfo :: Account -> Dir -> ApiInfo -> Handler ()
+putInfo acc infoDir info = undefined
+
+deleteInfo :: Account -> Dir -> Handler ()
+deleteInfo acc infoDir  = undefined
+
+getDetailList :: Account -> Handler [ApiDetail]
+getDetailList acc = undefined
+
+getDetail :: Account -> Dir -> Handler ApiDetail
+getDetail acc detailDir = undefined
+
+postDetail :: Account -> ApiDetail -> Handler()
+postDetail acc detail = undefined
+
+putDetail :: Account -> Dir -> ApiDetail -> Handler ()
+putDetail acc detailDir detail = undefined
+
+deleteDetail :: Account -> Dir -> Handler ()
+deleteDetail acc detailDir  = undefined
+
