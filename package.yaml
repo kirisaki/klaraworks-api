@@ -24,9 +24,12 @@ dependencies:
 - aeson
 - bytestring
 - containers
+- constraints
 - cookie
 - elm-export
 - esqueleto
+- extensible
+- lens
 - mtl
 - monad-logger
 - servant
@@ -40,6 +43,7 @@ dependencies:
 - text
 - time
 - transformers
+- unordered-containers
 - wai
 - wai-app-static
 - wai-logger

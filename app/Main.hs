@@ -6,7 +6,6 @@ module Main where
 
 import qualified Data.Text as T
 import qualified Data.Time as Time
-import           Data.Time.Calendar(fromGregorian)
 
 import           Network.Wai.Handler.Warp
 import           Network.Wai.Logger(withStdoutLogger)

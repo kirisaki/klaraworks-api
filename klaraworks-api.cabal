@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 174a6519c9d14df31785e93ce2a17b92080cd4de7900518a85f5896995d74695
+-- hash: d253fd650a4b3ba1f11ab3940f40b5d32352622c7d2be8267c4b14431424f259
 
 name:           klaraworks-api
 version:        0.0.0.2
@@ -33,10 +33,13 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
+    , constraints
     , containers
     , cookie
     , elm-export
     , esqueleto
+    , extensible
+    , lens
     , monad-logger
     , mtl
     , persistent
@@ -50,6 +53,7 @@ library
     , text
     , time
     , transformers
+    , unordered-containers
     , wai
     , wai-app-static
     , wai-logger
@@ -57,6 +61,7 @@ library
   exposed-modules:
       Api
       App
+      Types
       Utils
   other-modules:
       Paths_klaraworks_api
@@ -71,11 +76,14 @@ executable klaraworks
       aeson
     , base >=4.7 && <5
     , bytestring
+    , constraints
     , containers
     , cookie
     , elm-export
     , esqueleto
+    , extensible
     , klaraworks-api
+    , lens
     , monad-logger
     , mtl
     , persistent
@@ -89,6 +97,7 @@ executable klaraworks
     , text
     , time
     , transformers
+    , unordered-containers
     , wai
     , wai-app-static
     , wai-logger
@@ -107,11 +116,14 @@ test-suite klaraworks-test
       aeson
     , base >=4.7 && <5
     , bytestring
+    , constraints
     , containers
     , cookie
     , elm-export
     , esqueleto
+    , extensible
     , klaraworks-api
+    , lens
     , monad-logger
     , mtl
     , persistent
@@ -125,6 +137,7 @@ test-suite klaraworks-test
     , text
     , time
     , transformers
+    , unordered-containers
     , wai
     , wai-app-static
     , wai-logger

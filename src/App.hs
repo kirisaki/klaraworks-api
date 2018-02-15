@@ -53,7 +53,7 @@ authHandler = mkAuthHandler handler
   throw401 msg = throwError $ err401 { errBody = msg }
   handler req = either throw401 lookupAccount $ do
     cookie <- maybeToEither "Missing cookie header" $ Data.List.lookup "cookie" $ requestHeaders req
-    maybeToEither "Missing token in cookie" $ Data.List.lookup "servant-auth-cookie" $ parseCookies cookie
+    maybeToEither "Missing token in cookie" $ Data.List.lookup "klaraworks-admin" $ parseCookies cookie
     
 type instance AuthServerData (AuthProtect "cookie-auth") = Account
 
@@ -78,9 +78,9 @@ getWorksList = do
     return $ Data.List.map entityToApiWorks worksList
 
 getWorks :: T.Text -> Handler ApiWorks
-getWorks str = do
+getWorks inDir = do
   works <- liftIO $ runSql $ do
-    works <- selectFirst [WorksDir ==. str] []
+    works <- selectFirst [WorksDir ==. inDir] []
     return works
   case works of
     Just w -> return $ entityToApiWorks w
