@@ -51,6 +51,7 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
     contents [T.Text]
     status T.Text
     text T.Text
+    link T.Text
     deriving Show Eq
 
   User
@@ -64,7 +65,7 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
   
 
 mkField "dir date worksType fanart lang title \
-\ event origin contents status text login_id pass_hash"
+\ event origin contents status text login_id pass_hash link"
 
 type ApiLogin = Record
   [ "login_id" >: T.Text
@@ -89,6 +90,7 @@ type ApiDetail = Record
   , "contents" >: [T.Text]
   , "status" >: T.Text
   , "text" >: T.Text
+  , "link" >: T.Text
   ]
 
 type ApiWorksHeader = Record
@@ -102,13 +104,14 @@ type ApiWorks = Record
   [ "dir" >: Dir
   , "title" >: T.Text
   , "date" >: Day
-  , "event" >: Maybe T.Text
+  , "event" >:  T.Text
   , "worksType" >: T.Text
-  , "origin" >: Maybe T.Text
+  , "origin" >:  T.Text
   , "fanart" >: Bool
   , "contents" >: [T.Text]
-  , "status" >: Maybe T.Text
-  , "text" >: Maybe T.Text
+  , "status" >:  T.Text
+  , "text" >:  T.Text
+  , "link" >:  T.Text
   ]
 
 

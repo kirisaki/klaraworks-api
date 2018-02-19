@@ -62,6 +62,7 @@ testdetail01 = Detail { detailDir = "20180215-test"
                       , detailContents = ["01.jpg", "02.jpg"]
                       , detailStatus = "在庫あり"
                       , detailText = ""
+                      , detailLink = ""
                       }
 testdetail02 :: Detail
 testdetail02 = Detail { detailDir = "20180215-test"
@@ -72,6 +73,7 @@ testdetail02 = Detail { detailDir = "20180215-test"
                       , detailContents = ["01.jpg", "02.jpg"]
                       , detailStatus = "in stock"
                       , detailText = ""
+                      , detailLink = ""
                       }
         
 testdetail03 :: Detail
@@ -83,5 +85,6 @@ testdetail03 = Detail { detailDir = "20180216-untitled"
                       , detailContents = ["01.jpg", "02.jpg"]
                       , detailStatus = "在庫あり"
                       , detailText = ""
+                      , detailLink = ""
                       }
         

@@ -104,10 +104,43 @@ getWorksList language = do
           <: title @= detailTitle detail
           <: date @= infoDate info
           <: nil
-              
-      
+                    
 getWorks :: T.Text -> Dir -> Handler ApiWorks
-getWorks language inDir = undefined
+getWorks language inDir = do
+  meta <- liftIO $ runSql $ do
+    info <- selectFirst [ InfoDir ==. inDir ] []
+    detail <- selectFirst [ DetailDir ==. inDir
+                          , DetailLang ==. language
+                          ] []
+    case (info, detail) of
+      (Just(Entity iid i), Just(Entity did d)) ->
+        return $ Just $ makeWorksMeta i d
+      (Just(Entity iid i), Nothing) -> do
+        detail' <- selectFirst [ DetailDir ==. inDir ] []
+        case detail' of
+          Just(Entity did' d') ->
+            return $ Just $ makeWorksMeta i d'
+          Nothing ->
+            return Nothing
+      _ ->
+        return Nothing
+  case meta of
+    Just meta' -> return meta'
+    Nothing -> throwError err404
+  where
+    makeWorksMeta i d = dir @= infoDir i
+                        <: title @= detailTitle d
+                        <: date @= infoDate i
+                        <: event @= detailEvent d
+                        <: worksType @= infoWorksType i
+                        <: origin @= detailOrigin d
+                        <: fanart @= infoFanart i
+                        <: contents @= detailContents d
+                        <: status @= detailStatus d
+                        <: text @= detailText d
+                        <: link @= detailLink d
+                        <: nil
+
 
 postLogin :: ApiLogin -> Handler ()
 postLogin login_info  = undefined
