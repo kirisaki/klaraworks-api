@@ -38,6 +38,8 @@ type KlaraWorksApi =
   (
     "works" :> Capture "language" T.Text :> Get '[JSON] [ApiWorksHeader]  :<|>
     "works" :> Capture "language" T.Text :> Capture "worksDir" T.Text :> Get '[JSON] ApiWorks :<|>
+    "login" :> ReqBody '[JSON] ApiLogin :> Post '[JSON] () :<|>
+    "login" :> ReqBody '[JSON] ApiLogin :> Delete '[JSON] () :<|>
     "info" :>  AuthProtect "cookie-auth" :> Get '[JSON] [ApiInfo]  :<|>
     "info" :>  AuthProtect "cookie-auth" :>  Capture "infoDir" T.Text :> Get '[JSON] ApiInfo :<|>
     "info" :>  AuthProtect "cookie-auth" :>  ReqBody '[JSON] ApiInfo :> Post '[JSON] () :<|>

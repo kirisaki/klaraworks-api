@@ -13,10 +13,11 @@
 
 module App where
 
+import           Control.Monad(forM)
 import           Control.Monad.IO.Class (liftIO)
 import           Control.Monad.Trans.Except
 import           Data.ByteString (ByteString)
-import           Data.List
+import           Data.List as L
 import           Data.Map
 import           Data.Monoid
 import           Data.Time.Calendar (fromGregorian)
@@ -55,8 +56,8 @@ authHandler = mkAuthHandler handler
   maybeToEither e = maybe (Left e) Right
   throw401 msg = throwError $ err401 { errBody = msg }
   handler req = either throw401 lookupAccount $ do
-    cookie <- maybeToEither "Missing cookie header" $ Data.List.lookup "cookie" $ requestHeaders req
-    maybeToEither "Missing token in cookie" $ Data.List.lookup "klaraworks-admin" $ parseCookies cookie
+    cookie <- maybeToEither "Missing cookie header" $ L.lookup "cookie" $ requestHeaders req
+    maybeToEither "Missing token in cookie" $ L.lookup "klaraworks-admin" $ parseCookies cookie
     
 type instance AuthServerData (AuthProtect "cookie-auth") = Account
 
@@ -70,6 +71,8 @@ klaraWorksApp = return $ serveWithContext klaraWorksApi genAuthServerContext ser
 server :: Server KlaraWorksApi
 server = getWorksList :<|>
          getWorks :<|>
+         postLogin :<|>
+         deleteLogin :<|>
          getInfoList :<|>
          getInfo :<|>
          postInfo :<|>
@@ -82,16 +85,35 @@ server = getWorksList :<|>
          deleteDetail 
 
 getWorksList :: T.Text -> Handler [ApiWorksHeader]
-getWorksList language = return [test]
-  where
-    test :: ApiWorksHeader
-    test = dir @= "aaaaaa"
-      <: title @= "aaa"
-      <: date @= (fromGregorian 2018 02 04)
-      <: nil
+getWorksList language = do
+  liftIO $ runSql $ do
+    infoList <- selectList [] [Desc InfoDir]
+    details <- forM infoList $ \(Entity iid info) -> do
+      detail <- selectFirst [ DetailDir ==. infoDir info
+                            , DetailLang ==. language
+                            ] []
+      return (info, detail)
+    return $ L.map makeHeader (removeNoDetail details)
+      where
+        removeNoDetail = L.filter $ \(i, d) ->
+          case d of
+            Nothing -> False
+            _ -> True
+        makeHeader (info, Just (Entity did detail)) =
+          dir @= infoDir info
+          <: title @= detailTitle detail
+          <: date @= infoDate info
+          <: nil
+              
       
 getWorks :: T.Text -> Dir -> Handler ApiWorks
 getWorks language inDir = undefined
+
+postLogin :: ApiLogin -> Handler ()
+postLogin login_info  = undefined
+
+deleteLogin :: ApiLogin -> Handler ()
+deleteLogin login_info  = undefined
 
 getInfoList :: Account -> Handler [ApiInfo]
 getInfoList acc = undefined

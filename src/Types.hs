@@ -21,6 +21,7 @@ import           Data.Proxy
 import           Data.String
 import qualified Data.Text as T
 import           Data.Time
+import           Data.Time.Clock
 import           GHC.TypeLits
 
 import           Control.Lens hiding ((:>))
@@ -33,27 +34,42 @@ import           Database.Persist
 import           Database.Persist.TH
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-    Info
-        dir T.Text
-        date Day
-        worksType T.Text
-        fanart Bool
-        UniqueDir dir
-        deriving Show Eq
+  Info
+    dir T.Text
+    date Day
+    worksType T.Text
+    fanart Bool
+    UniqueDir dir
+    deriving Show Eq
        
-    Detail
-        dir T.Text
-        lang T.Text
-        title T.Text
-        event T.Text
-        origin T.Text
-        contents [T.Text]
-        status T.Text
-        text T.Text
-        deriving Show Eq
-|]
+  Detail
+    dir T.Text
+    lang T.Text
+    title T.Text
+    event T.Text
+    origin T.Text
+    contents [T.Text]
+    status T.Text
+    text T.Text
+    deriving Show Eq
 
-mkField "dir date worksType fanart lang title event origin contents status text"
+  User
+    login_id T.Text
+    pass_hash T.Text
+
+  Session
+    hash T.Text
+    expire UTCTime
+|]
+  
+
+mkField "dir date worksType fanart lang title \
+\ event origin contents status text login_id pass_hash"
+
+type ApiLogin = Record
+  [ "login_id" >: T.Text
+  , "password" >: T.Text
+  ]
 
 type Dir = T.Text
   
